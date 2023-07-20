@@ -20,7 +20,7 @@ class BertClassifier(nn.Module):
 
     def forward(self, input_ids=None, attention_mask=None):
         bert_output = self.bert(input_ids=input_ids, attention_mask=attention_mask)
-        pooled_output = bert_output.last_hidden_state[:, 0, :] if config.use_cls else torch.mean(bert_output.last_hidden_state,dim=1)
+        pooled_output = bert_output.last_hidden_state[:, 0, :] if self.config.use_cls else torch.mean(bert_output.last_hidden_state,dim=1)
 
 
         logits = self.dropout(pooled_output)
