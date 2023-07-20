@@ -16,6 +16,7 @@ parser.add_argument("--model_name_or_path", default="bert-base-chinese", type=st
 parser.add_argument("--output_dir", default="/kaggle/output/", type=str, help="")
 parser.add_argument("--output_filename", default="test_pred_bert", type=str, help="")
 parser.add_argument("--device", default="cpu", type=str, help="")
+parser.add_argument("--pooling", default="cls", type=str, help="")
 parser.add_argument("--hidden_size", default=768, type=int, help="")
 parser.add_argument("--seed", default=42, type=int, help="")
 
