@@ -42,7 +42,7 @@ class Config:
     epoch = 5
     train_file = './train_emb_cls_data_0705.json'
     dev_file = './dev_emb_cls_data_0705.json'
-    test_file = './dev_cls_data.json'
+    test_file = './ent_test_data.json'
     target_dir = './models/'
     use_fgm = False
     use_cls = args.pooling=='cls'
@@ -156,7 +156,7 @@ for epoch in range(config.epoch):
     print('val loss {} val acc {}'.format(dev_loss,dev_f1))
 model.load_state_dict(torch.load('model_weights.pth'))
 
-test_dataset = NLPCCTaskDataSet(filepath=config.dev_file,mini_test=False,is_test=False)
+test_dataset = NLPCCTaskDataSet(filepath=config.test_file,mini_test=False,is_test=False)
 test_data_loader =  DataLoader(test_dataset, batch_size=64, collate_fn = partial(collate_fn_nlpcc,tokenizer=tokenizer), shuffle=False)
 gold,preds = test(model,test_data_loader)
 import os
