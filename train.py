@@ -19,6 +19,9 @@ parser.add_argument("--device", default="cpu", type=str, help="")
 parser.add_argument("--pooling", default="cls", type=str, help="")
 parser.add_argument("--hidden_size", default=768, type=int, help="")
 parser.add_argument("--seed", default=42, type=int, help="")
+parser.add_argument("--batch_size", default=32, type=int, help="")
+parser.add_argument("--learning_rate", default=3e-5, type=float, help="")
+
 
 args = parser.parse_args()
 
@@ -38,7 +41,7 @@ device = torch.device('cuda' if args.device=='cuda' else 'cpu')
 class Config:
     pretrain_model_path = args.model_name_or_path
     hidden_size = args.hidden_size
-    learning_rate = 5e-5
+    learning_rate = args.learning_rate
     epoch = 5
     train_file = './train_emb_cls_data_0705.json'
     dev_file = './dev_emb_cls_data_0705.json'
@@ -137,7 +140,7 @@ model.to(device)
 tokenizer = AutoTokenizer.from_pretrained(config.pretrain_model_path)
 
 dataset = NLPCCTaskDataSet(filepath=config.train_file,mini_test=False)
-train_data_loader = DataLoader(dataset, batch_size=32, collate_fn = partial(collate_fn_nlpcc,tokenizer=tokenizer), shuffle=True)
+train_data_loader = DataLoader(dataset, batch_size=args.batch_size, collate_fn = partial(collate_fn_nlpcc,tokenizer=tokenizer), shuffle=True)
 dev_dataset = NLPCCTaskDataSet(filepath=config.dev_file,mini_test=False,is_test=False)
 dev_data_loader =  DataLoader(dev_dataset, batch_size=16, collate_fn = partial(collate_fn_nlpcc,tokenizer=tokenizer), shuffle=False)
 
