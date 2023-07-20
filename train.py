@@ -45,6 +45,7 @@ class Config:
     test_file = './dev_cls_data.json'
     target_dir = './models/'
     use_fgm = False
+    use_cls = args.pooling==='cls'
 
 import time
 now_time = time.strftime("%Y%m%d%H", time.localtime())
