@@ -12,11 +12,10 @@ from dataset import NLPCCTaskDataSet
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--model_name_or_path", default="", type=str, help="")
-parser.add_argument("--tokenizer_name", default="", type=str, help="")
+parser.add_argument("--model_name_or_path", default="bert-base-chinese", type=str, help="")
 parser.add_argument("--output_dir", default="/kaggle/output/", type=str, help="")
-parser.add_argument("--result_dir", default="/cache/output/result/", type=str, help="")
-parser.add_argument("--device", default="/cache/pretrained_ckpt/", type=str, help="")
+parser.add_argument("--output_filename", default="test_pred_bert", type=str, help="")
+parser.add_argument("--device", default="cpu", type=str, help="")
 parser.add_argument("--hidden_size", default=768, type=int, help="")
 parser.add_argument("--seed", default=42, type=int, help="")
 
@@ -40,9 +39,9 @@ class Config:
     hidden_size = args.hidden_size
     learning_rate = 5e-5
     epoch = 1
-    train_file = './data/train_emb_cls_data_0705.json'
-    dev_file = './data/dev_emb_cls_data_0705.json'
-    test_file = './ccks23cls/dev_cls_data.json'
+    train_file = './train_emb_cls_data_0705.json'
+    dev_file = './dev_emb_cls_data_0705.json'
+    test_file = './dev_cls_data.json'
     target_dir = './models/'
     use_fgm = False
 
@@ -100,13 +99,14 @@ def test(model, dev_data_loader):
     model.eval()
     gold_like = []
     pred_like = []
-    for step, batch in enumerate(dev_data_loader):
-        sent_id, mask, like_labels = batch[0].to(device), batch[1].to(device), batch[2].to(device)
-        logits_like = model(sent_id, mask)
-        preds = logits_like.squeeze(-1).detach().cpu().numpy()
-        gold = batch[2].detach().cpu().numpy()
-        gold_like.extend(gold.tolist())
-        pred_like.extend(preds.tolist())
+    with torch.no_grad():
+        for step, batch in enumerate(dev_data_loader):
+            sent_id, mask, like_labels = batch[0].to(device), batch[1].to(device), batch[2].to(device)
+            logits_like = model(sent_id, mask)
+            preds = logits_like.squeeze(-1).detach().cpu().numpy()
+            gold = batch[2].detach().cpu().numpy()
+            gold_like.extend(gold.tolist())
+            pred_like.extend(preds.tolist())
     return gold_like, pred_like
 
 def collate_fn_nlpcc(batch, max_seq_lenght=128,tokenizer=None):
@@ -154,10 +154,13 @@ for epoch in range(config.epoch):
     print('val loss {} val acc {}'.format(dev_loss,dev_f1))
 model.load_state_dict(torch.load('model_weights.pth'))
 
-test_dataset = NLPCCTaskDataSet(filepath='./merge_sd_clean_0718.json',mini_test=False,is_test=False)
+test_dataset = NLPCCTaskDataSet(filepath=config.dev_file,mini_test=False,is_test=False)
 test_data_loader =  DataLoader(test_dataset, batch_size=64, collate_fn = partial(collate_fn_nlpcc,tokenizer=tokenizer), shuffle=False)
 gold,preds = test(model,test_data_loader)
-writer = open('test_preds_sd_clean_0718.txt','a+',encoding='utf-8')
+import os
+if os.path.exists(args.output_filename):
+    os.remove(args.output_filename)
+writer = open(args.output_filename,'a+',encoding='utf-8')
 for pred,t in zip(preds,test_dataset.dataset):
     writer.write(t+'\t'+str(pred)+'\n')
 writer.close()
