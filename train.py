@@ -132,7 +132,7 @@ model = BertClassifier(config)
 optimizer = AdamW(model.parameters(), lr=config.learning_rate)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
-tokenizer = AutoTokenizer.from_pretrained( args.model_name_path)
+tokenizer = AutoTokenizer.from_pretrained(config.pretrain_model_path)
 
 dataset = NLPCCTaskDataSet(filepath=config.train_file,mini_test=False)
 train_data_loader = DataLoader(dataset, batch_size=32, collate_fn = partial(collate_fn_nlpcc,tokenizer=tokenizer), shuffle=True)
