@@ -45,7 +45,7 @@ class Config:
     epoch = 5
     train_file = './train_emb_cls_data_0705.json'
     dev_file = './dev_emb_cls_data_0705.json'
-    test_file = './ent_test_data.json'
+    test_file = './final_cls_data.json'
     target_dir = './models/'
     use_fgm = False
     use_cls = args.pooling=='cls'
