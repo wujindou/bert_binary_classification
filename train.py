@@ -162,5 +162,5 @@ if os.path.exists(args.output_filename):
     os.remove(args.output_filename)
 writer = open(args.output_filename,'a+',encoding='utf-8')
 for pred,t in zip(preds,test_dataset.dataset):
-    writer.write(t+'\t'+str(pred)+'\n')
+    writer.write(t+'\t'+str(int(pred>=0.5))+'\n')
 writer.close()
