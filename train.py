@@ -35,7 +35,7 @@ device = torch.device('cuda' if args.device=='cuda' else 'cpu')
 
 
 class Config:
-    pretrain_model_path = args.model_name_path
+    pretrain_model_path = args.model_name_or_path
     hidden_size = args.hidden_size
     learning_rate = 5e-5
     epoch = 1
