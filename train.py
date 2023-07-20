@@ -39,7 +39,7 @@ class Config:
     pretrain_model_path = args.model_name_or_path
     hidden_size = args.hidden_size
     learning_rate = 5e-5
-    epoch = 1
+    epoch = 5
     train_file = './train_emb_cls_data_0705.json'
     dev_file = './dev_emb_cls_data_0705.json'
     test_file = './dev_cls_data.json'
